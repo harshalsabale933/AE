@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<job>
+  <directory>/</directory>
+  <created_user>PS Copilot</created_user>
+  <created_date>2026/02/18 10:29:04.745</created_date>
+  <modified_user>PS Copilot</modified_user>
+  <modified_date>2026/02/18 10:29:04.745</modified_date>
+  <ps_copilot_version>0.2</ps_copilot_version>
+  <modified_date_by_copilot>2026/02/18 10:29:04.745</modified_date_by_copilot>
+  <fileHash/>
+  <stepEntryHash/>
+  <name>PR_Incident_Reporting_Process</name>
+  <description/>
+  <process_version/>
+  <parameters>
+    <parameter>
+      <name>Manager_Email</name>
+      <description>Manager Recipient Email</description>
+      <param_description/>
+      <type>String</type>
+      <uiControlType>TextBox</uiControlType>
+      <list_of_values/>
+      <valueSeparator/>
+      <queryName/>
+      <queryMappings/>
+      <default_value>manager@demo.com</default_value>
+      <secret>N</secret>
+      <optional>N</optional>
+      <runtime>N</runtime>
+    </parameter>
+    <parameter>
+      <name>SMTP_Credentials</name>
+      <description>SMTP Auth Credentials</description>
+      <param_description/>
+      <type>Credential</type>
+      <uiControlType>TextBox</uiControlType>
+      <list_of_values/>
+      <valueSeparator/>
+      <queryName/>
+      <queryMappings/>
+      <default_value>{"password":"Encrypted ","enc2":"","name":"","enc1":"","opt1":"","opt2":"","username":"bot@demo.com"}</default_value>
+      <secret>N</secret>
+      <optional>N</optional>
+      <runtime>N</runtime>
+    </parameter>
+  </parameters>
+  <ps_variables/>
+  <logging_table/>
+  <entries>
+    <entry>
+      <name>START_Daily</name>
+      <type>SPECIAL</type>
+      <xloc>100</xloc>
+      <yloc>125</yloc>
+      <draw>Y</draw>
+      <hour>08</hour>
+      <minutes>00</minutes>
+      <start>Y</start>
+      <schedulerType>1</schedulerType>
+      <nr>0</nr>
+    </entry>
+    <entry>
+      <name>Run_Fetch_Workflow</name>
+      <type>WORKFLOW</type>
+      <xloc>340</xloc>
+      <yloc>125</yloc>
+      <draw>Y</draw>
+      <params_from_previous>N</params_from_previous>
+      <filename>${Internal.Entry.Current.Directory}/WF_Fetch_Incidents.psw</filename>
+      <arg_from_previous>N</arg_from_previous>
+      <parameters>{"pass_all_parameters":"Y"}</parameters>
+      <specification_method>filename</specification_method>
+      <nr>0</nr>
+    </entry>
+    <entry>
+      <name>Email_Report_To_Manager</name>
+      <type>MAIL</type>
+      <xloc>580</xloc>
+      <yloc>125</yloc>
+      <draw>Y</draw>
+      <filetypes>
+        <filetype>GENERAL</filetype>
+      </filetypes>
+      <embeddedimages>{"embeddedimage":[{"image_name":"${Internal.Entry.Current.Directory}/Incident_Report.xls"}]}</embeddedimages>
+      <server>smtp.demo.com</server>
+      <port>587</port>
+      <auth_user>${SMTP_Credentials.Username}</auth_user>
+      <subject>Daily ServiceNow Open Incident Report</subject>
+      <destination>${Manager_Email}</destination>
+      <auth_password>${SMTP_Credentials.Password}</auth_password>
+      <comment>Please find the attached daily incident report.</comment>
+      <include_files>Y</include_files>
+      <nr>0</nr>
+    </entry>
+    <entry>
+      <name>Process_Complete</name>
+      <type>SUCCESS</type>
+      <xloc>820</xloc>
+      <yloc>125</yloc>
+      <draw>Y</draw>
+      <nr>0</nr>
+    </entry>
+  </entries>
+  <hops>
+    <hop>
+      <from>START_Daily</from>
+      <to>Run_Fetch_Workflow</to>
+      <enabled>Y</enabled>
+      <visible>Y</visible>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>Run_Fetch_Workflow</from>
+      <to>Email_Report_To_Manager</to>
+      <enabled>Y</enabled>
+      <visible>Y</visible>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Email_Report_To_Manager</from>
+      <to>Process_Complete</to>
+      <enabled>Y</enabled>
+      <visible>Y</visible>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+  </hops>
+  <notepads>
+    <notepad>
+      <note>Main Process that runs daily at 8 AM, triggers the data extraction workflow, and emails the resulting Excel file to the manager.</note>
+      <xloc>10</xloc>
+      <yloc>10</yloc>
+      <width>200</width>
+      <heigth>85</heigth>
+    </notepad>
+  </notepads>
+  <groups/>
+</job>
